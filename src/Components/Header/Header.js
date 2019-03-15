@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Menu, Segment, Input, Icon } from "semantic-ui-react";
 import LogoAsset from '../../assets/logo.png'
 import { POPULATION_ISRAEL_API, STOCK_VOLUME_API } from '../../Constants/apis'
+import { NUM_OF_DATA_POINTS, THRESHOLD } from '../../Constants/placeholders'
+import { debounce } from 'lodash'
 
 const Header = (props) => {
   const { filters, setFilters } = props
@@ -11,6 +13,15 @@ const Header = (props) => {
       setFilters({ ...filters, currentAPI: api })
     }
   }
+
+  const setNumberOfDataPoints = debounce(numOfDataPoints => {
+    if (filters.numOfDataPoints !== numOfDataPoints
+      && !isNaN(numOfDataPoints)
+      && numOfDataPoints > 1) {
+      setFilters({ ...filters, numOfDataPoints })
+    }
+  }, 500)
+
 
   return (
     <Segment>
@@ -27,13 +38,15 @@ const Header = (props) => {
           active={filters.currentAPI.TITLE === STOCK_VOLUME_API.TITLE}
           onClick={() => setCurrentApi(STOCK_VOLUME_API)} />
         <Menu.Item>
-          <Input iconPosition='left' placeholder='Number of data points'>
+          <Input iconPosition='left'
+            placeholder={NUM_OF_DATA_POINTS}
+            onChange={(e) => setNumberOfDataPoints(e.target.value)}>
             <Icon name='chart line' />
             <input />
           </Input>
         </Menu.Item>
         <Menu.Item>
-          <Input iconPosition='left' placeholder='Threshold'>
+          <Input iconPosition='left' placeholder={THRESHOLD}>
             <Icon name='minus' />
             <input />
           </Input>

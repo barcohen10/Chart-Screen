@@ -6,7 +6,7 @@ import { POPULATION_ISRAEL_API as DEFAULT_API } from './Constants/apis';
 const App = () => {
   const [filters, setFilters] = useState({
     currentAPI: DEFAULT_API,
-    numOfDataPoints: 5,
+    numOfDataPoints: 10,
     threshold: ''
   });
 
