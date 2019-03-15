@@ -1,21 +1,43 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Menu, Segment } from "semantic-ui-react";
+import { Menu, Segment, Input, Icon } from "semantic-ui-react";
 import LogoAsset from '../../assets/logo.png'
+import { POPULATION_ISRAEL_API, STOCK_VOLUME_API } from '../../Constants/apis'
 
-const Header = () => {
-  const AGE_OF_EMPLOYEES = 'Age Of Employees';
-  const BLA_BLA = 'Bla Bla'
-  const [currentApi, setCurrentApi] = useState(AGE_OF_EMPLOYEES);
+const Header = (props) => {
+  const { filters, setFilters } = props
+  const setCurrentApi = (api) => {
+    if (filters.currentAPI.TITLE !== api.TITLE) {
+      setFilters({ ...filters, currentAPI: api })
+    }
+  }
 
   return (
-    <Segment inverted>
-      <Menu inverted secondary pointing>
+    <Segment>
+      <Menu secondary pointing>
         <Menu.Item>
           <Image src={LogoAsset} />
         </Menu.Item>
-        <Menu.Item name={AGE_OF_EMPLOYEES} active={currentApi === AGE_OF_EMPLOYEES} onClick={() => setCurrentApi(AGE_OF_EMPLOYEES)} />
-        <Menu.Item name={BLA_BLA} active={currentApi === BLA_BLA} onClick={() => setCurrentApi(BLA_BLA)} />
+        <Menu.Item
+          name={POPULATION_ISRAEL_API.TITLE}
+          active={filters.currentAPI.TITLE === POPULATION_ISRAEL_API.TITLE}
+          onClick={() => setCurrentApi(POPULATION_ISRAEL_API)} />
+        <Menu.Item
+          name={STOCK_VOLUME_API.TITLE}
+          active={filters.currentAPI.TITLE === STOCK_VOLUME_API.TITLE}
+          onClick={() => setCurrentApi(STOCK_VOLUME_API)} />
+        <Menu.Item>
+          <Input iconPosition='left' placeholder='Number of data points'>
+            <Icon name='chart line' />
+            <input />
+          </Input>
+        </Menu.Item>
+        <Menu.Item>
+          <Input iconPosition='left' placeholder='Threshold'>
+            <Icon name='minus' />
+            <input />
+          </Input>
+        </Menu.Item>
       </Menu>
     </Segment>
   )
@@ -24,6 +46,5 @@ const Header = () => {
 export default Header
 
 const Image = styled.img`
-  width: 150px !important;
   margin-right: 20px !important;
 `
