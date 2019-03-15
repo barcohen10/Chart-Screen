@@ -10,30 +10,46 @@ import 'chartjs-plugin-annotation'
 
 const Chart = (props) => {
 
-    const [isLoading, setIsLoading] = useState(true);
     const { filters, setError } = props
-    const mountedDataPoints = useRef();
-    const mountedThreshold = useRef();
-
-    const services = {
-        [POPULATION_ISRAEL_API.TITLE]: new IsraelPopulationService(),
-        [STOCK_VOLUME_API.TITLE]: new StockVolumeService(),
-    }
+    const mounted = useRef();
+    const [isLoading, setIsLoading] = useState(true);
     const [chartData, setChartData] = useState({
         ...DATASET_CONFIG,
         labels: POPULATION_ISRAEL_API.LABELS
     });
-
     const [annotation, setAnnotation] = useState({
         ...THRESHOLD_LINE_CONFIG,
     });
+    const services = {
+        [POPULATION_ISRAEL_API.TITLE]: new IsraelPopulationService(),
+        [STOCK_VOLUME_API.TITLE]: new StockVolumeService(),
+    }
 
-    const calculateAndSetAnnotation = (data) => {
+    const markPointsAboveThreshold = (thresholdValue, dataset) => {
+        dataset.pointBackgroundColor = []
+        dataset.data.forEach(point => {
+            let color = ''
+            if (point > thresholdValue) {
+                color = 'purple'
+            }
+            dataset.pointBackgroundColor.push(color)
+        })
+    }
+    const setAnnotationAndMarkPoints = (annotation, dataset) => {
+        const threshold = annotation.annotations[0].value
+        setAnnotation(annotation)
+        if (threshold) {
+            markPointsAboveThreshold(threshold, dataset)
+        }
+    }
+    const calculateAndSetThreshold = (dataset) => {
         if (!filters.threshold) {
             const newAnnotation = { ...annotation }
-            newAnnotation.annotations[0].value = Math.round(Math.max(...data) * 0.98)
-            newAnnotation.annotations[0].label.content = Math.round(Math.max(...data) * 0.98)
-            setAnnotation(newAnnotation)
+            const thresholdValue = Math.round(Math.max(...dataset.data) * 0.96)
+
+            newAnnotation.annotations[0].value = thresholdValue
+            newAnnotation.annotations[0].label.content = thresholdValue
+            setAnnotationAndMarkPoints(newAnnotation, dataset)
         }
     }
 
@@ -46,7 +62,7 @@ const Chart = (props) => {
                 newChartData.datasets[0].label = filters.currentAPI.TITLE
                 setChartData(newChartData)
 
-                calculateAndSetAnnotation(data)
+                calculateAndSetThreshold(newChartData.datasets[0])
                 setIsLoading(false)
             })
         }
@@ -56,15 +72,15 @@ const Chart = (props) => {
     }, [filters.currentAPI])
 
     useEffect(() => {
-        if (!mountedDataPoints.current) {
-            mountedDataPoints.current = true;
+        if (!mounted.current) {
+            mounted.current = true;
         } else {
             //componentDidUpate logic
             try {
                 const newChartData = { ...chartData }
                 newChartData.datasets[0].data = newChartData.cachedData.slice(0, filters.numOfDataPoints)
                 setChartData(newChartData)
-                calculateAndSetAnnotation(newChartData.datasets[0].data)
+                calculateAndSetThreshold(newChartData.datasets[0])
             }
             catch (e) {
                 setError('Setting number of data points failed')
@@ -73,24 +89,19 @@ const Chart = (props) => {
     }, [filters.numOfDataPoints])
 
     useEffect(() => {
-        if (!mountedThreshold.current) {
-            mountedThreshold.current = true;
-        } else {
-            //componentDidUpate logic
-            try {
-                const newAnnotation = { ...annotation }
-                newAnnotation.annotations[0].value = filters.threshold
-                newAnnotation.annotations[0].label.content = filters.threshold
-                setAnnotation(newAnnotation)
+        try {
+            const newAnnotation = { ...annotation }
+            newAnnotation.annotations[0].value = filters.threshold
+            newAnnotation.annotations[0].label.content = filters.threshold
 
-                // in order to re-render chart, the dataset must be changed
-                const newChartData = { ...chartData }
-                newChartData.datasets[0][Math.random()] = null
-                setChartData(newChartData)
-            }
-            catch (e) {
-                setError('Setting the threshold failed')
-            }
+            // in order to re-render chart, the dataset must be changed
+            const newChartData = { ...chartData }
+            newChartData.datasets[0][Math.random()] = null
+            setChartData(newChartData)
+            setAnnotationAndMarkPoints(newAnnotation, newChartData.datasets[0])
+        }
+        catch (e) {
+            setError('Setting the threshold failed')
         }
     }, [filters.threshold])
 
