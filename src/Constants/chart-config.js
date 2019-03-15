@@ -17,5 +17,21 @@ export const DATASET_CONFIG = {
             pointHoverBorderWidth: 2,
             pointHitRadius: 10,
         },
-    ],
+    ]
+}
+
+export const THRESHOLD_LINE_CONFIG = {
+    annotations: [{
+        type: 'line',
+        mode: 'horizontal',
+        scaleID: 'y-axis-0',
+        value: '8100000',
+        borderColor: 'black',
+        borderWidth: 3,
+        label: {
+            backgroundColor: "purple",
+            content: "Test Label",
+            enabled: true
+          },
+    }]
 }

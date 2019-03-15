@@ -12,25 +12,40 @@ const Header = (props) => {
   const [dataPoints, setDataPoints] = useState('');
   const debouncedDataPoints = useDebounce(dataPoints, 500);
 
+  const [threshold, setThreshold] = useState('');
+  const debouncedThreshold = useDebounce(threshold, 500);
+
   const setCurrentApi = (api) => {
     if (filters.currentAPI.TITLE !== api.TITLE) {
       setFilters({ ...filters, currentAPI: api })
     }
   }
 
-    useEffect(
-      () => {
-        if ((filters.numOfDataPoints !== debouncedDataPoints
-          && !isNaN(debouncedDataPoints)
-          && debouncedDataPoints > 1)) {
-            setFilters({ ...filters, numOfDataPoints: debouncedDataPoints })
-        } else if(debouncedDataPoints) {
-          setError('Please check your input')
-          setFilters({ ...filters, numOfDataPoints: 10 })
-        }
-      },
-      [debouncedDataPoints]
-    );  
+  useEffect(
+    () => {
+      if ((filters.numOfDataPoints !== debouncedDataPoints
+        && !isNaN(debouncedDataPoints)
+        && debouncedDataPoints > 1)) {
+        setFilters({ ...filters, numOfDataPoints: debouncedDataPoints })
+      } else if (debouncedDataPoints) {
+        setError('Please check your input')
+        setFilters({ ...filters, numOfDataPoints: 10 })
+      }
+    },
+    [debouncedDataPoints]
+  );
+
+  useEffect(
+    () => {
+      if ((filters.threshold !== debouncedThreshold
+        && !isNaN(debouncedThreshold))) {
+        setFilters({ ...filters, threshold: debouncedThreshold })
+      } else if (debouncedThreshold) {
+        setError('Please check your input')
+      }
+    },
+    [debouncedThreshold]
+  );
 
   return (
     <Segment>
@@ -57,7 +72,10 @@ const Header = (props) => {
           </Input>
         </Menu.Item>
         <Menu.Item>
-          <Input iconPosition='left' placeholder={THRESHOLD}>
+          <Input iconPosition='left'
+            placeholder={THRESHOLD}
+            value={threshold}
+            onChange={(e) => setThreshold(e.target.value)}>
             <Icon name='minus' />
             <input />
           </Input>
