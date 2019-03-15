@@ -1,27 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Menu, Segment, Input, Icon } from "semantic-ui-react";
 import LogoAsset from '../../assets/logo.png'
 import { POPULATION_ISRAEL_API, STOCK_VOLUME_API } from '../../Constants/apis'
-import { NUM_OF_DATA_POINTS, THRESHOLD } from '../../Constants/placeholders'
-import { debounce } from 'lodash'
+import { NUM_OF_DATA_POINTS, THRESHOLD } from '../../Constants/common'
+import useDebounce from '../../Hooks/useDebounce'
 
 const Header = (props) => {
-  const { filters, setFilters } = props
+  const { filters, setFilters, setError } = props
+
+  const [dataPoints, setDataPoints] = useState('');
+  const debouncedDataPoints = useDebounce(dataPoints, 500);
+
   const setCurrentApi = (api) => {
     if (filters.currentAPI.TITLE !== api.TITLE) {
       setFilters({ ...filters, currentAPI: api })
     }
   }
 
-  const setNumberOfDataPoints = debounce(numOfDataPoints => {
-    if (filters.numOfDataPoints !== numOfDataPoints
-      && !isNaN(numOfDataPoints)
-      && numOfDataPoints > 1) {
-      setFilters({ ...filters, numOfDataPoints })
-    }
-  }, 500)
-
+    useEffect(
+      () => {
+        if ((filters.numOfDataPoints !== debouncedDataPoints
+          && !isNaN(debouncedDataPoints)
+          && debouncedDataPoints > 1)) {
+            setFilters({ ...filters, numOfDataPoints: debouncedDataPoints })
+        } else if(debouncedDataPoints) {
+          setError('Please check your input')
+          setFilters({ ...filters, numOfDataPoints: 10 })
+        }
+      },
+      [debouncedDataPoints]
+    );  
 
   return (
     <Segment>
@@ -38,9 +47,11 @@ const Header = (props) => {
           active={filters.currentAPI.TITLE === STOCK_VOLUME_API.TITLE}
           onClick={() => setCurrentApi(STOCK_VOLUME_API)} />
         <Menu.Item>
-          <Input iconPosition='left'
+          <Input
+            iconPosition='left'
+            value={dataPoints}
             placeholder={NUM_OF_DATA_POINTS}
-            onChange={(e) => setNumberOfDataPoints(e.target.value)}>
+            onChange={(e) => setDataPoints(e.target.value)}>
             <Icon name='chart line' />
             <input />
           </Input>

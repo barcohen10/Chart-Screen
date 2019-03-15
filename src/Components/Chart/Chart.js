@@ -10,7 +10,7 @@ import { Loader, Dimmer } from 'semantic-ui-react'
 const Chart = (props) => {
 
     const [isLoading, setIsLoading] = useState(true);
-    const { filters } = props
+    const { filters, setError } = props
     const mounted = useRef();
 
     const services = {
@@ -23,15 +23,20 @@ const Chart = (props) => {
     });
 
     useEffect(() => {
-        setIsLoading(true)
-        services[filters.currentAPI.TITLE].getChartData().then(({ data, labels }) => {
-            const newChartData = { ...chartData, labels, cachedData: data }
-            newChartData.datasets[0].data = data
-            newChartData.datasets[0].label = filters.currentAPI.TITLE
-
-            setChartData(newChartData)
-            setIsLoading(false)
-        })
+        try {
+            setIsLoading(true)
+            services[filters.currentAPI.TITLE].getChartData().then(({ data, labels }) => {
+                const newChartData = { ...chartData, labels, cachedData: data }
+                newChartData.datasets[0].data = data
+                newChartData.datasets[0].label = filters.currentAPI.TITLE
+    
+                setChartData(newChartData)
+                setIsLoading(false)
+            })
+        }
+        catch(e) {
+            setError('Fetching chart data failed')
+        }
     }, [filters.currentAPI])
 
     useEffect(() => {
@@ -39,9 +44,14 @@ const Chart = (props) => {
             mounted.current = true;
         } else {
             //componentDidUpate logic
-            const newChartData = { ...chartData }
-            newChartData.datasets[0].data = newChartData.cachedData.slice(0, filters.numOfDataPoints)
-            setChartData(newChartData)
+            try {
+                const newChartData = { ...chartData }
+                newChartData.datasets[0].data = newChartData.cachedData.slice(0, filters.numOfDataPoints)
+                setChartData(newChartData)
+            }
+            catch(e) {
+                setError('Changing number of data points failed')
+            }
         }
     }, [filters.numOfDataPoints])
 

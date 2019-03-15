@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react'
 import Header from './Components/Header/Header'
 import Chart from './Components/Chart/Chart'
-import { POPULATION_ISRAEL_API as DEFAULT_API } from './Constants/apis';
+import { POPULATION_ISRAEL_API as DEFAULT_API } from './Constants/apis'
+import { Modal, Message } from "semantic-ui-react";
+
 
 const App = () => {
   const [filters, setFilters] = useState({
@@ -9,11 +11,24 @@ const App = () => {
     numOfDataPoints: 10,
     threshold: ''
   });
+  const [error, setError] = useState('');
+  const headerProps = { filters, setFilters, setError }
+  const chartProps = { filters, setError }
 
-  return (<div>
-    <Header filters={filters} setFilters={setFilters} />
-    <Chart filters={filters} />
-  </div>)
+  return (
+    <Fragment>
+      <Header {...headerProps} />
+      <Chart {...chartProps} />
+      <Modal size='tiny' open={!!error} onClose={() => setError('')} closeIcon>
+        <Modal.Header>Error</Modal.Header>
+        <Modal.Content>
+          <Message negative>
+            <Message.Header>{ error }</Message.Header>
+          </Message>
+        </Modal.Content>
+      </Modal>
+    </Fragment>
+  )
 }
 
 export default App;
