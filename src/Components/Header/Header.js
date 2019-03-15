@@ -17,7 +17,7 @@ const Header = (props) => {
 
   const setCurrentApi = (api) => {
     if (filters.currentAPI.TITLE !== api.TITLE) {
-      setFilters({ ...filters, currentAPI: api })
+      setFilters({ numOfDataPoints: 10, threshold: '', currentAPI: api })
       
       //clear inputs data
       setDataPoints('')
