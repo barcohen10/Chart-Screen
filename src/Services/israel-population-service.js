@@ -10,7 +10,7 @@ function fetchAndCalculateChartData() {
         let year = 2009
         return () => {
             this.chartData.labels = [...this.chartData.labels, year]
-            return axios.get(`http://api.population.io/1.0/population/${year++}/Israel?format=json`)
+            return axios.get(`https://api.population.io/1.0/population/${year++}/Israel?format=json`)
         }
     })();
 
