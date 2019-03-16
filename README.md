@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-![Screenshot](src/assets/screenshot.png)
+![Screenshot](src/assets/stocks-screenshot.png)
 
 ## About
 
@@ -16,9 +16,12 @@ Demo is available in: https://chartscreen.azurewebsites.net
 
 ### Filters
 
+* Choose from several APIs
 * Set number of data points to presented on chart (minimum is 2, default is 10)
 * Set Threshold - will create a threshold line on chart + Mark datapoints that exceed the selected threshold in purple (default is 96% from the biggest datapoint)
 
 ### Errors
 
-Errors will be informed by error modal
+Errors will be delivered by error modal
+For Example:
+![Screenshot](src/assets/error-screenshot.png)
