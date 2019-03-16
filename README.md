@@ -22,6 +22,6 @@ Demo is available in: https://chartscreen.azurewebsites.net
 
 ### Errors
 
-Errors will be delivered by error modal
-For Example:
+Errors will be delivered by error modal </br>
+For example:
 ![Screenshot](src/assets/error-screenshot.png)
