@@ -26,30 +26,45 @@ const Chart = (props) => {
     }
 
     const markPointsAboveThreshold = (thresholdValue, dataset) => {
-        dataset.pointBackgroundColor = []
-        dataset.data.forEach(point => {
-            let color = ''
-            if (point > thresholdValue) {
-                color = 'purple'
-            }
-            dataset.pointBackgroundColor.push(color)
-        })
+        try {
+            dataset.pointBackgroundColor = []
+            dataset.data.forEach(point => {
+                let color = ''
+                if (point > thresholdValue) {
+                    color = 'purple'
+                }
+                dataset.pointBackgroundColor.push(color)
+            })
+        }
+        catch (e) {
+            setError('Mark points above threshold failed')
+        }
     }
     const setAnnotationAndMarkPoints = (annotation, dataset) => {
-        const threshold = annotation.annotations[0].value
-        setAnnotation(annotation)
-        if (threshold) {
-            markPointsAboveThreshold(threshold, dataset)
+        try {
+            const threshold = annotation.annotations[0].value
+            setAnnotation(annotation)
+            if (threshold) {
+                markPointsAboveThreshold(threshold, dataset)
+            }
+        }
+        catch (e) {
+            setError('Set Threshold failed')
         }
     }
     const calculateAndSetThreshold = (dataset) => {
-        if (!filters.threshold) {
-            const newAnnotation = { ...annotation }
-            const thresholdValue = Math.round(Math.max(...dataset.data) * 0.96)
+        try {
+            if (!filters.threshold) {
+                const newAnnotation = { ...annotation }
+                const thresholdValue = Math.round(Math.max(...dataset.data) * 0.96)
 
-            newAnnotation.annotations[0].value = thresholdValue
-            newAnnotation.annotations[0].label.content = thresholdValue
-            setAnnotationAndMarkPoints(newAnnotation, dataset)
+                newAnnotation.annotations[0].value = thresholdValue
+                newAnnotation.annotations[0].label.content = thresholdValue
+                setAnnotationAndMarkPoints(newAnnotation, dataset)
+            }
+        }
+        catch (e) {
+            setError('Set Threshold failed')
         }
     }
 

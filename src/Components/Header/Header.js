@@ -16,24 +16,34 @@ const Header = (props) => {
   const debouncedThreshold = useDebounce(threshold, 500);
 
   const setCurrentApi = (api) => {
-    if (filters.currentAPI.TITLE !== api.TITLE) {
-      setFilters({ numOfDataPoints: 10, threshold: '', currentAPI: api })
-      
-      //clear inputs data
-      setDataPoints('')
-      setThreshold('')
+    try {
+      if (filters.currentAPI.TITLE !== api.TITLE) {
+        setFilters({ numOfDataPoints: 10, threshold: '', currentAPI: api })
+
+        //clear inputs data
+        setDataPoints('')
+        setThreshold('')
+      }
+    }
+    catch (e) {
+      setError('Setting current API failed')
     }
   }
 
   useEffect(
     () => {
-      if ((filters.numOfDataPoints !== debouncedDataPoints
-        && !isNaN(debouncedDataPoints)
-        && debouncedDataPoints > 1)) {
-        setFilters({ ...filters, numOfDataPoints: debouncedDataPoints })
-      } else if (debouncedDataPoints) {
-        setError('Please check your input')
-        setFilters({ ...filters, numOfDataPoints: 10 })
+      try {
+        if ((filters.numOfDataPoints !== debouncedDataPoints
+          && !isNaN(debouncedDataPoints)
+          && debouncedDataPoints > 1)) {
+          setFilters({ ...filters, numOfDataPoints: debouncedDataPoints })
+        } else if (debouncedDataPoints) {
+          setError('Please check your input')
+          setFilters({ ...filters, numOfDataPoints: 10 })
+        }
+      }
+      catch (e) {
+        setError('Setting number of data points failed')
       }
     },
     [debouncedDataPoints]
@@ -41,11 +51,16 @@ const Header = (props) => {
 
   useEffect(
     () => {
-      if ((filters.threshold !== debouncedThreshold
-        && !isNaN(debouncedThreshold))) {
-        setFilters({ ...filters, threshold: debouncedThreshold })
-      } else if (debouncedThreshold) {
-        setError('Please check your input')
+      try {
+        if ((filters.threshold !== debouncedThreshold
+          && !isNaN(debouncedThreshold))) {
+          setFilters({ ...filters, threshold: debouncedThreshold })
+        } else if (debouncedThreshold) {
+          setError('Please check your input')
+        }
+      }
+      catch (e) {
+        setError('Setting threshold failed')
       }
     },
     [debouncedThreshold]
